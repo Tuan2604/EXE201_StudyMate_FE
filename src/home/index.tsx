@@ -73,13 +73,13 @@ const Home: React.FC = () => {
               >
                 <span className="text-sm">⌕</span>
               </button>
-              <button
-                type="button"
+              <Link
+                to="/membership"
                 className="hidden sm:inline-flex items-center gap-2 rounded-md border border-[#bbdefb] bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
               >
                 <span className="text-sm">♛</span>
                 Upgrade
-              </button>
+              </Link>
               <Link
                 to="/login"
                 className="text-sm font-semibold text-slate-700 hover:text-slate-900"
