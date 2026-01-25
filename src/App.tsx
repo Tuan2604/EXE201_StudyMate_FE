@@ -2,10 +2,10 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Home from './home'
-import Login from './login'
-import Register from './register'
-import ForgotPassword from './forgot-password'
-import Membership from './membership'
+import Login from './login/login'
+import Register from './register/register'
+import ForgotPassword from './forgot-password/forgot-password'
+import Membership from './membership/membership'
 
 const App: React.FC = () => {
   return (
