@@ -1,38 +1,51 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
 import LogoImg from '../accesory/picture/StudyMate 1.png'
 
-const Login: React.FC = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+const ChangePassword: React.FC = () => {
+  const [otpCode, setOtpCode] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-  const { login } = useAuth()
   const navigate = useNavigate()
+  // const location = useLocation()
+  // const email = location.state?.email || ''
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSuccess('')
+
+    if (newPassword !== confirmNewPassword) {
+      setError('Passwords do not match')
+      setLoading(false)
+      return
+    }
 
     try {
-      const response = await fetch('https://localhost:7259/api/Auth/login', {
+      const response = await fetch('https://localhost:7259/api/Auth/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          otpCode,
+          newPassword,
+          confirmNewPassword,
+        }),
       })
 
       if (response.ok) {
-        const data = await response.json()
-        login(data.token)
-        navigate('/')
+        setSuccess('Password reset successfully')
+        // Optionally navigate to login after success
+        setTimeout(() => navigate('/login'), 2000)
       } else {
         const errorData = await response.json()
-        setError(errorData.message || 'Login failed')
+        setError(errorData.message || 'Failed to reset password')
       }
     } catch (err) {
       setError('Network error or server not reachable')
@@ -53,30 +66,27 @@ const Login: React.FC = () => {
             className="h-16 w-auto object-contain drop-shadow-md mr-4"
           />
         </div>
-        <p className="text-sm text-gray-600">Start your learning journey today</p>
+        <p className="text-sm text-gray-600">Reset your password</p>
       </div>
 
       <div className="w-full max-w-md rounded-2xl bg-white shadow-xl border border-gray-200 px-10 py-8">
-        <h2 className="text-xl font-semibold text-gray-900">Welcome Back</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Change Password</h2>
         <p className="mt-1 text-xs text-gray-500">
-          Sign in to continue your learning journey
+          Enter the OTP and your new password
         </p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-1">
             <label className="block text-xs font-medium text-gray-700">
-              Email
+              OTP Code
             </label>
             <div className="flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm focus-within:border-[#1976d2] focus-within:ring-1 focus-within:ring-[#1976d2]">
-              <span className="mr-2 text-gray-400">
-                <i className="fa-regular fa-envelope" />
-              </span>
               <input
-                type="email"
-                placeholder="your@email.com"
+                type="text"
+                placeholder="Enter OTP code"
                 className="w-full border-none outline-none text-gray-800 placeholder:text-gray-400 text-sm"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value)}
                 required
               />
             </div>
@@ -84,7 +94,7 @@ const Login: React.FC = () => {
 
           <div className="space-y-1">
             <label className="block text-xs font-medium text-gray-700">
-              Password
+              New Password
             </label>
             <div className="flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm focus-within:border-[#1976d2] focus-within:ring-1 focus-within:ring-[#1976d2]">
               <span className="mr-2 text-gray-400">
@@ -92,62 +102,53 @@ const Login: React.FC = () => {
               </span>
               <input
                 type="password"
-                placeholder="••••••••"
+                placeholder="Enter new password"
                 className="w-full border-none outline-none text-gray-800 placeholder:text-gray-400 text-sm"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="block text-xs font-medium text-gray-700">
+              Confirm New Password
+            </label>
+            <div className="flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm focus-within:border-[#1976d2] focus-within:ring-1 focus-within:ring-[#1976d2]">
+              <span className="mr-2 text-gray-400">
+                <i className="fa-solid fa-lock" />
+              </span>
+              <input
+                type="password"
+                placeholder="Confirm new password"
+                className="w-full border-none outline-none text-gray-800 placeholder:text-gray-400 text-sm"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
                 required
               />
             </div>
           </div>
 
           {error && <p className="text-red-500 text-xs">{error}</p>}
-
-          <div className="mt-1 flex items-center justify-between text-xs">
-            <label className="inline-flex items-center space-x-2 text-gray-600">
-              <input
-                type="checkbox"
-                className="h-3 w-3 rounded border-gray-300 text-[#1976d2] focus:ring-[#1976d2]"
-              />
-              <span>Remember me</span>
-            </label>
-            <Link
-              to="/forgot-password"
-              className="text-[11px] font-medium text-[#1976d2] hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
+          {success && <p className="text-green-500 text-xs">{success}</p>}
 
           <button
             type="submit"
             className="mt-4 w-full rounded-md bg-[#1976d2] py-2 text-sm font-medium text-white shadow hover:bg-[#145ca5] transition-colors"
             disabled={loading}
           >
-            {loading ? 'Signing In...' : 'Sign In'}
-          </button>
-
-          <div className="mt-4 flex items-center">
-            <div className="h-px flex-1 bg-gray-200" />
-            <span className="mx-3 text-[10px] text-gray-400">
-              OR CONTINUE WITH
-            </span>
-            <div className="h-px flex-1 bg-gray-200" />
-          </div>
-
-          <button
-            type="button"
-            className="mt-3 flex w-full items-center justify-center space-x-2 rounded-md border border-gray-300 bg-white py-2 text-xs font-medium text-gray-700 hover:bg-gray-50"
-          >
-            <span className="text-[#ea4335] text-base">G</span>
-            <span>Continue with Google</span>
+            {loading ? 'Resetting...' : 'Reset Password'}
           </button>
         </form>
 
         <p className="mt-5 text-center text-[11px] text-gray-500">
-          Don&apos;t have an account?{' '}
-          <Link to="/register" className="font-semibold text-[#1976d2] hover:underline">
-            Sign up
+          Remember your password?{' '}
+          <Link
+            to="/login"
+            className="font-medium text-[#1976d2] hover:underline"
+          >
+            Sign in
           </Link>
         </p>
       </div>
@@ -155,5 +156,4 @@ const Login: React.FC = () => {
   )
 }
 
-export default Login
-
+export default ChangePassword

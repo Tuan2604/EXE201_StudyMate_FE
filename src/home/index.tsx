@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import LogoImg from '../accesory/picture/StudyMate 1.png'
 import BanerImg from '../accesory/picture/Students learning together.png'
 
@@ -40,6 +41,7 @@ const FeatureCard: React.FC<{
 }
 
 const Home: React.FC = () => {
+  const { isAuthenticated, logout } = useAuth()
   return (
     <div className="min-h-screen bg-white">
       {/* Top nav */}
@@ -80,18 +82,34 @@ const Home: React.FC = () => {
                 <span className="text-sm">♛</span>
                 Upgrade
               </Link>
-              <Link
-                to="/login"
-                className="text-sm font-semibold text-slate-700 hover:text-slate-900"
-              >
-                Sign in
-              </Link>
-              <Link
-                to="/register"
-                className="rounded-md bg-[#1976d2] px-4 py-2 text-sm font-semibold text-white shadow hover:bg-[#145ca5] transition-colors"
-              >
-                Get Started
-              </Link>
+              {isAuthenticated ? (
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => logout()}
+                    className="text-sm font-semibold text-slate-700 hover:text-slate-900"
+                  >
+                    Logout
+                  </button>
+                  <div className="h-8 w-8 rounded-full bg-[#1976d2] flex items-center justify-center text-white">
+                    <i className="fa-solid fa-user"></i>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="text-sm font-semibold text-slate-700 hover:text-slate-900"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="rounded-md bg-[#1976d2] px-4 py-2 text-sm font-semibold text-white shadow hover:bg-[#145ca5] transition-colors"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
