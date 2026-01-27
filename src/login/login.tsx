@@ -8,9 +8,31 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showToast, setShowToast] = useState(false)
+  const [userName, setUserName] = useState('')
 
   const { login } = useAuth()
   const navigate = useNavigate()
+
+  const decodeToken = (token: string) => {
+    try {
+      const base64Url = token.split('.')[1]
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+      const jsonPayload = decodeURIComponent(
+        window
+          .atob(base64)
+          .split('')
+          .map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+          })
+          .join('')
+      )
+      return JSON.parse(jsonPayload)
+    } catch (error) {
+      console.error('Error decoding token:', error)
+      return null
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,9 +49,19 @@ const Login: React.FC = () => {
       })
 
       if (response.ok) {
-        const data = await response.json()
-        login(data.token)
-        navigate('/')
+        const responseData = await response.json()
+        const data = responseData.data || responseData
+
+        const name = data?.user?.fullName || 'User'
+        
+        setUserName(name)
+        setShowToast(true)
+        login(data.accessToken || data.token, data.user)
+        
+        // Wait for 1.5s before redirecting
+        setTimeout(() => {
+          navigate('/')
+        }, 1500)
       } else {
         const errorData = await response.json()
         setError(errorData.message || 'Login failed')
@@ -43,7 +75,28 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f5f5f5] flex flex-col items-center justify-center px-4 relative">
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed top-5 right-5 z-50 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-xl border-l-4 border-green-500 animate-[slideIn_0.5s_ease-out]">
+          <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
+            <svg
+              className="w-5 h-5"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+            </svg>
+            <span className="sr-only">Check icon</span>
+          </div>
+          <div className="ml-3 text-sm font-normal text-gray-900">
+            Welcome back, <span className="font-bold text-[#1976d2]">{userName}</span>!
+          </div>
+        </div>
+      )}
+
       <div className="mb-10 flex flex-col items-center space-y-3">
         {/* Brand logo image */}
         <div className="flex items-center justify-center">

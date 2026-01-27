@@ -41,7 +41,7 @@ const FeatureCard: React.FC<{
 }
 
 const Home: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, logout, user } = useAuth()
   return (
     <div className="min-h-screen bg-white">
       {/* Top nav */}
@@ -84,15 +84,25 @@ const Home: React.FC = () => {
               </Link>
               {isAuthenticated ? (
                 <div className="flex items-center gap-3">
+                  <div className="hidden md:flex flex-col items-end mr-2">
+                    <span className="text-sm font-semibold text-slate-900">
+                      {user?.fullName || 'User'}
+                    </span>
+                    <span className="text-[10px] text-slate-500 capitalize">
+                      {user?.role || 'Student'}
+                    </span>
+                  </div>
+                  <div className="h-8 w-8 rounded-full bg-[#1976d2] flex items-center justify-center text-white cursor-pointer hover:bg-[#1565c0] transition-colors">
+                    <span className="font-semibold text-xs">
+                      {user?.fullName ? user.fullName.charAt(0).toUpperCase() : <i className="fa-solid fa-user"></i>}
+                    </span>
+                  </div>
                   <button
                     onClick={() => logout()}
-                    className="text-sm font-semibold text-slate-700 hover:text-slate-900"
+                    className="text-xs font-medium text-slate-500 hover:text-red-600 transition-colors ml-1"
                   >
                     Logout
                   </button>
-                  <div className="h-8 w-8 rounded-full bg-[#1976d2] flex items-center justify-center text-white">
-                    <i className="fa-solid fa-user"></i>
-                  </div>
                 </div>
               ) : (
                 <>
