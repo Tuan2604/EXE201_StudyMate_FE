@@ -201,9 +201,12 @@ const TeacherHome: React.FC = () => {
             </h1>
             <p className="mt-1 text-slate-500">Manage your courses and track student progress</p>
           </div>
-          <button className="inline-flex items-center gap-2 bg-[#1976d2] text-white px-5 py-2.5 rounded-lg font-semibold shadow-lg hover:bg-[#1565c0] hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+          <Link 
+            to="/create-new-course"
+            className="inline-flex items-center gap-2 bg-[#1976d2] text-white px-5 py-2.5 rounded-lg font-semibold shadow-lg hover:bg-[#1565c0] hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+          >
             <i className="fa-solid fa-plus"></i> Create New Course
-          </button>
+          </Link>
         </div>
 
         {/* Stats Grid */}

@@ -9,6 +9,7 @@ import ForgotPassword from './forgot-password/forgot-password'
 import ChangePassword from './change-password/change-password'
 import Membership from './membership/membership'
 import Profile from './profile/profile'
+import CreateNewCourse from './create-new-course/create-new-course'
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/membership" element={<Membership />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/create-new-course" element={<CreateNewCourse />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
