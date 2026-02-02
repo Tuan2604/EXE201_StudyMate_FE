@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import TeacherHome from './TeacherHome'
 import LogoImg from '../accesory/picture/StudyMate 1.png'
 import BanerImg from '../accesory/picture/Students learning together.png'
 
@@ -40,7 +41,7 @@ const FeatureCard: React.FC<{
   )
 }
 
-const Home: React.FC = () => {
+const StudentHome: React.FC = () => {
   const { isAuthenticated, logout, user } = useAuth()
   return (
     <div className="min-h-screen bg-white">
@@ -84,19 +85,21 @@ const Home: React.FC = () => {
               </Link>
               {isAuthenticated ? (
                 <div className="flex items-center gap-3">
-                  <div className="hidden md:flex flex-col items-end mr-2">
-                    <span className="text-sm font-semibold text-slate-900">
-                      {user?.fullName || 'User'}
-                    </span>
-                    <span className="text-[10px] text-slate-500 capitalize">
-                      {user?.role || 'Student'}
-                    </span>
-                  </div>
-                  <div className="h-8 w-8 rounded-full bg-[#1976d2] flex items-center justify-center text-white cursor-pointer hover:bg-[#1565c0] transition-colors">
-                    <span className="font-semibold text-xs">
-                      {user?.fullName ? user.fullName.charAt(0).toUpperCase() : <i className="fa-solid fa-user"></i>}
-                    </span>
-                  </div>
+                  <Link to="/profile" className="flex items-center gap-3 group">
+                    <div className="hidden md:flex flex-col items-end mr-2">
+                      <span className="text-sm font-semibold text-slate-900 group-hover:text-[#1976d2] transition-colors">
+                        {user?.fullName || 'User'}
+                      </span>
+                      <span className="text-[10px] text-slate-500 capitalize">
+                        {user?.role || 'Student'}
+                      </span>
+                    </div>
+                    <div className="h-8 w-8 rounded-full bg-[#1976d2] flex items-center justify-center text-white cursor-pointer group-hover:bg-[#1565c0] transition-colors">
+                      <span className="font-semibold text-xs">
+                        {user?.fullName ? user.fullName.charAt(0).toUpperCase() : <i className="fa-solid fa-user"></i>}
+                      </span>
+                    </div>
+                  </Link>
                   <button
                     onClick={() => logout()}
                     className="text-xs font-medium text-slate-500 hover:text-red-600 transition-colors ml-1"
@@ -330,6 +333,19 @@ const Home: React.FC = () => {
       </main>
     </div>
   )
+}
+
+const Home: React.FC = () => {
+  const { user } = useAuth()
+  
+  // Check if user is a teacher (case-insensitive)
+  const isTeacher = user?.role?.toLowerCase() === 'teacher' || user?.role?.toLowerCase() === 'lecturer'
+
+  if (isTeacher) {
+    return <TeacherHome />
+  }
+
+  return <StudentHome />
 }
 
 export default Home
