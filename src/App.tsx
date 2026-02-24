@@ -4,6 +4,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { CourseProvider } from './contexts/CourseContext'
 import Home from './home'
+import StudentCourses from './home/StudentCourses'
+import TeacherCourses from './home/TeacherCourses'
+import { useAuth } from './contexts/AuthContext'
 import Login from './login/login'
 import Register from './register/register'
 import ForgotPassword from './forgot-password/forgot-password'
@@ -22,13 +25,24 @@ const CourseCreationLayout = () => (
   </CourseProvider>
 )
 
+const CoursesRouter = () => {
+  const { user } = useAuth()
+  const isTeacher = user?.role?.toLowerCase() === 'teacher' || user?.role?.toLowerCase() === 'lecturer'
+  
+  if (isTeacher) {
+    return <TeacherCourses />
+  }
+  return <StudentCourses />
+}
+
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/courses" element={<CoursesRouter />} />
+            <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
