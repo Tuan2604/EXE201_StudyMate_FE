@@ -16,6 +16,12 @@ import QuizSetup from './create-new-course/quiz-setup'
 import Flashcards from './create-new-course/flashcards'
 import CourseSettings from './create-new-course/course-settings'
 
+import AdminDashboard from './admin-dashboard/admin-dashboard'
+import UserManagement from './user-management/user-management'
+
+import CourseManagement from './course-management/course-management'
+import Courses from './courses/courses'
+
 // Layout component to provide course context
 import { Outlet } from 'react-router-dom'
 const CourseCreationLayout = () => (
@@ -36,6 +42,11 @@ const App: React.FC = () => {
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/membership" element={<Membership />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/user-management" element={<UserManagement />} />
+          <Route path="/course-management" element={<CourseManagement />} />
+          <Route path="/courses" element={<Courses />} />
           
           {/* Course Creation Routes wrapped in Provider */}
           <Route element={<CourseCreationLayout />}>

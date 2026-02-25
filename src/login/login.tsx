@@ -34,13 +34,26 @@ const Login: React.FC = () => {
 
         const name = data?.user?.fullName || 'User'
         
+        console.log('Login response data:', data)
+        console.log('User role:', data.user?.role)
+        
         setUserName(name)
         setShowToast(true)
         login(data.accessToken || data.token, data.user)
         
         // Wait for 1.5s before redirecting
         setTimeout(() => {
-          navigate('/')
+          // Redirect based on user role (case-insensitive)
+          const userRole = data.user?.role?.toLowerCase()
+          console.log('User role (lowercase):', userRole)
+          
+          if (userRole === 'admin') {
+            console.log('Redirecting to admin dashboard')
+            navigate('/admin/dashboard')
+          } else {
+            console.log('Redirecting to home')
+            navigate('/')
+          }
         }, 1500)
       } else {
         const errorData = await response.json()

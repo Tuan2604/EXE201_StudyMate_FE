@@ -5,15 +5,20 @@ import TeacherHome from './TeacherHome'
 import LogoImg from '../accesory/picture/StudyMate 1.png'
 import BanerImg from '../accesory/picture/Students learning together.png'
 
-const NavItem: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const NavItem: React.FC<{ children: React.ReactNode; to?: string }> = ({ children, to }) => {
+  if (to) {
+    return (
+      <Link
+        to={to}
+        className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+      >
+        {children}
+      </Link>
+    );
+  }
   return (
-    <a
-      href="#"
-      className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
-    >
-      {children}
-    </a>
-  )
+    <span className="text-sm text-slate-600 hover:text-slate-900 transition-colors cursor-default">{children}</span>
+  );
 }
 
 const Stat: React.FC<{ value: string; label: string }> = ({ value, label }) => {
@@ -62,7 +67,7 @@ const StudentHome: React.FC = () => {
 
             <nav className="hidden md:flex items-center gap-7">
               <NavItem>Home</NavItem>
-              <NavItem>Courses</NavItem>
+              <NavItem to="/courses">Courses</NavItem>
               <NavItem>AI Tutor</NavItem>
               <NavItem>Game</NavItem>
               <NavItem>Community</NavItem>
