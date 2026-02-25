@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { CourseProvider } from './contexts/CourseContext'
 import Home from './home'
 import StudentCourses from './home/StudentCourses'
+import CourseDetail from './home/CourseDetail'
 import TeacherCourses from './home/TeacherCourses'
 import { useAuth } from './contexts/AuthContext'
 import Login from './login/login'
@@ -41,8 +42,9 @@ const App: React.FC = () => {
       <BrowserRouter>
         <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/courses" element={<CoursesRouter />} />
-            <Route path="/login" element={<Login />} />
+             <Route path="/courses" element={<CoursesRouter />} />
+             <Route path="/courses/:id" element={<CourseDetail />} />
+             <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
