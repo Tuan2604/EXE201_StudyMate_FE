@@ -64,9 +64,6 @@ const CourseCard: React.FC<{
       </div>
       <div className="mt-5 flex gap-2">
         <button className="px-3 py-1.5 rounded-md border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
-          Edit
-        </button>
-        <button className="px-3 py-1.5 rounded-md border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
           Analytics
         </button>
       </div>
