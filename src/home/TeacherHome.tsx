@@ -1,18 +1,8 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import LogoImg from '../accesory/picture/StudyMate 1.png'
-
-const NavItem: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return (
-    <a
-      href="#"
-      className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
-    >
-      {children}
-    </a>
-  )
-}
+import { NavItem } from './StudentHome'
 
 const StatCard: React.FC<{
   label: string
@@ -112,6 +102,7 @@ const QuickAction: React.FC<{
 
 const TeacherHome: React.FC = () => {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [courses, setCourses] = React.useState<any[]>([])
   const [loading, setLoading] = React.useState(true)
 
@@ -169,8 +160,8 @@ const TeacherHome: React.FC = () => {
             </div>
 
             <nav className="hidden md:flex items-center gap-6">
-              <NavItem>Home</NavItem>
-              <NavItem>Courses</NavItem>
+              <NavItem to="/">Home</NavItem>
+              <NavItem to="/courses">Courses</NavItem>
               <NavItem>AI Tutor</NavItem>
               <NavItem>Game</NavItem>
               <NavItem>Community</NavItem>
@@ -211,7 +202,10 @@ const TeacherHome: React.FC = () => {
                   </div>
                 </Link>
                 <button
-                  onClick={() => logout()}
+                  onClick={async () => {
+                    await logout()
+                    navigate('/')
+                  }}
                   className="text-xs font-semibold text-slate-500 hover:text-red-600 transition-colors ml-1"
                 >
                   <i className="fa-solid fa-right-from-bracket text-lg"></i>
@@ -272,9 +266,9 @@ const TeacherHome: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-slate-900">Your Courses</h2>
-              <button className="text-sm font-semibold text-[#1976d2] hover:text-[#1565c0] hover:underline">
+              <Link to="/courses" className="text-sm font-semibold text-[#1976d2] hover:text-[#1565c0] hover:underline">
                 View All
-              </button>
+              </Link>
             </div>
 
             <div className="space-y-4">

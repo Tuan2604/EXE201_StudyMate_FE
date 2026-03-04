@@ -49,7 +49,7 @@ const Step: React.FC<{
 const Curriculum: React.FC = () => {
   const { user, logout } = useAuth()
   const { courseData, updateCourseData } = useCourse()
-  const [currentStep, setCurrentStep] = useState(2)
+  const currentStep: number = 2
 
   // Temporary state for the new section input
   const [newSectionTitle, setNewSectionTitle] = useState('')

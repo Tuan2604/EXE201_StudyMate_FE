@@ -48,7 +48,7 @@ const Step: React.FC<{
 const CourseSettings: React.FC = () => {
   const { user, logout } = useAuth()
   const { courseData, updateCourseData, resetCourseData } = useCourse()
-  const [currentStep, setCurrentStep] = useState(5)
+  const currentStep: number = 5
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 

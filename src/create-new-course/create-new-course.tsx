@@ -48,7 +48,7 @@ const Step: React.FC<{
 const CreateNewCourse: React.FC = () => {
   const { user, logout } = useAuth()
   const { courseData, updateCourseData } = useCourse()
-  const [currentStep, setCurrentStep] = useState(1)
+  const currentStep: number = 1
   const [categories, setCategories] = useState<any[]>([])
 
   React.useEffect(() => {

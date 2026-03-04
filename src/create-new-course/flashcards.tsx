@@ -49,7 +49,7 @@ const Step: React.FC<{
 const Flashcards: React.FC = () => {
   const { user, logout } = useAuth()
   const { courseData, updateCourseData, resetCourseData } = useCourse()
-  const [currentStep, setCurrentStep] = useState(4)
+  const currentStep: number = 4
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 

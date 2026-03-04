@@ -49,7 +49,7 @@ const Step: React.FC<{
 const QuizSetup: React.FC = () => {
   const { user, logout } = useAuth()
   const { courseData, updateCourseData } = useCourse()
-  const [currentStep, setCurrentStep] = useState(3)
+  const currentStep: number = 3
 
   // Local state for the current question being edited
   const [currentQuestion, setCurrentQuestion] = useState<QuizQuestion>({

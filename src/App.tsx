@@ -4,6 +4,10 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { CourseProvider } from './contexts/CourseContext'
 import Home from './home'
+import StudentCourses from './home/StudentCourses'
+import CourseDetail from './home/CourseDetail'
+import TeacherCourses from './home/TeacherCourses'
+import { useAuth } from './contexts/AuthContext'
 import Login from './login/login'
 import Register from './register/register'
 import ForgotPassword from './forgot-password/forgot-password'
@@ -14,13 +18,9 @@ import CreateNewCourse from './create-new-course/create-new-course'
 import Curriculum from './create-new-course/curriculum'
 import QuizSetup from './create-new-course/quiz-setup'
 import Flashcards from './create-new-course/flashcards'
-import CourseSettings from './create-new-course/course-settings'
-
 import AdminDashboard from './admin-dashboard/admin-dashboard'
 import UserManagement from './user-management/user-management'
-
 import CourseManagement from './course-management/course-management'
-import Courses from './courses/courses'
 
 // Layout component to provide course context
 import { Outlet } from 'react-router-dom'
@@ -30,13 +30,25 @@ const CourseCreationLayout = () => (
   </CourseProvider>
 )
 
+const CoursesRouter = () => {
+  const { user } = useAuth()
+  const isTeacher = user?.role?.toLowerCase() === 'teacher' || user?.role?.toLowerCase() === 'lecturer'
+  
+  if (isTeacher) {
+    return <TeacherCourses />
+  }
+  return <StudentCourses />
+}
+
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Home />} />
+             <Route path="/courses" element={<CoursesRouter />} />
+             <Route path="/courses/:id" element={<CourseDetail />} />
+             <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
@@ -46,7 +58,6 @@ const App: React.FC = () => {
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/user-management" element={<UserManagement />} />
           <Route path="/course-management" element={<CourseManagement />} />
-          <Route path="/courses" element={<Courses />} />
           
           {/* Course Creation Routes wrapped in Provider */}
           <Route element={<CourseCreationLayout />}>
