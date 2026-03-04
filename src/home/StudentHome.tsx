@@ -64,8 +64,8 @@ const StudentHome: React.FC = () => {
               <NavItem to="/">Home</NavItem>
               <NavItem to="/courses">Courses</NavItem>
               <NavItem to="/community">Community</NavItem>
+              <NavItem to="/game">Game</NavItem>
               <NavItem>AI Tutor</NavItem>
-              <NavItem>Game</NavItem>
             </nav>
 
             <div className="flex items-center gap-3">
