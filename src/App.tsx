@@ -22,6 +22,7 @@ import Flashcards from './create-new-course/flashcards'
 import AdminDashboard from './admin-dashboard/admin-dashboard'
 import UserManagement from './user-management/user-management'
 import CourseManagement from './course-management/course-management'
+import PaymentManagement from './payment-management/payment-management'
 import Payment from './payment/payment'
 import PaymentSuccess from './payment/payment-success'
 import PaymentCancel from './payment/payment-cancel'
@@ -69,6 +70,7 @@ const App: React.FC = () => {
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/user-management" element={<UserManagement />} />
           <Route path="/course-management" element={<CourseManagement />} />
+          <Route path="/payment-management" element={<PaymentManagement />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/community/create" element={<CreatePost />} />
           <Route path="/community/edit/:postId" element={<EditPost />} />

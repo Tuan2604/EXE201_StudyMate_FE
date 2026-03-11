@@ -1,23 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import LogoImg from '../accesory/picture/StudyMate 1.png'
+import { getRevenueSummary } from '../services/paymentService'
+import type { RevenueSummaryResponse } from '../services/paymentService'
 
 const AdminDashboard: React.FC = () => {
   const { user, logout } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [revenueSummary, setRevenueSummary] = useState<RevenueSummaryResponse | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  // Hardcoded revenue data (monthly)
-  const revenueData = [
-    { month: 'Jan', revenue: 12500 },
-    { month: 'Feb', revenue: 15200 },
-    { month: 'Mar', revenue: 18900 },
-    { month: 'Apr', revenue: 16400 },
-    { month: 'May', revenue: 21300 },
-    { month: 'Jun', revenue: 25600 },
-  ]
-
-  // Hardcoded usage data (monthly active users)
+  // Hardcoded usage data (monthly active users) - keep for now
   const usageData = [
     { month: 'Jan', users: 1250 },
     { month: 'Feb', users: 1580 },
@@ -27,18 +21,24 @@ const AdminDashboard: React.FC = () => {
     { month: 'Jun', users: 2680 },
   ]
 
-  // Hardcoded transaction data
-  const transactionData = [
-    { month: 'Jan', count: 245 },
-    { month: 'Feb', count: 312 },
-    { month: 'Mar', count: 389 },
-    { month: 'Apr', count: 298 },
-    { month: 'May', count: 425 },
-    { month: 'Jun', count: 512 },
-  ]
-
-  const maxRevenue = Math.max(...revenueData.map(d => d.revenue))
   const maxUsers = Math.max(...usageData.map(d => d.users))
+
+  // Fetch revenue summary from API
+  useEffect(() => {
+    const fetchRevenueSummary = async () => {
+      try {
+        setLoading(true)
+        const data = await getRevenueSummary()
+        setRevenueSummary(data)
+      } catch (error) {
+        console.error('Error fetching revenue summary:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRevenueSummary()
+  }, [])
 
   // Check if user is not logged in
   if (!user) {
@@ -228,91 +228,118 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Total Users</p>
-                <p className="text-3xl font-bold text-slate-900 mt-2">1,234</p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <i className="fa-solid fa-users text-2xl text-[#1976d2]"></i>
-              </div>
-            </div>
+        {loading ? (
+          <div className="text-center py-8">
+            <i className="fa-solid fa-spinner fa-spin text-3xl text-[#1976d2]"></i>
+            <p className="text-slate-600 mt-3">Đang tải dữ liệu...</p>
           </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Revenue</p>
-                <p className="text-3xl font-bold text-slate-900 mt-2">
-                  ${revenueData[revenueData.length - 1].revenue.toLocaleString()}
-                </p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <i className="fa-solid fa-dollar-sign text-2xl text-green-600"></i>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Number of Transactions</p>
-                <p className="text-3xl font-bold text-slate-900 mt-2">
-                  {transactionData.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
-                </p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <i className="fa-solid fa-receipt text-2xl text-[#1976d2]"></i>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Rating</p>
-                <p className="text-3xl font-bold text-slate-900 mt-2">4.8</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <i className="fa-solid fa-star text-yellow-400 text-sm"></i>
-                  <i className="fa-solid fa-star text-yellow-400 text-sm"></i>
-                  <i className="fa-solid fa-star text-yellow-400 text-sm"></i>
-                  <i className="fa-solid fa-star text-yellow-400 text-sm"></i>
-                  <i className="fa-solid fa-star-half-stroke text-yellow-400 text-sm"></i>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Total Users</p>
+                  <p className="text-3xl font-bold text-slate-900 mt-2">1,234</p>
+                </div>
+                <div className="p-3 bg-blue-100 rounded-lg">
+                  <i className="fa-solid fa-users text-2xl text-[#1976d2]"></i>
                 </div>
               </div>
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <i className="fa-solid fa-star text-2xl text-purple-600"></i>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Tổng doanh thu</p>
+                  <p className="text-3xl font-bold text-slate-900 mt-2">
+                    {revenueSummary ? new Intl.NumberFormat('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    }).format(revenueSummary.totalRevenue) : '0 ₫'}
+                  </p>
+                </div>
+                <div className="p-3 bg-green-100 rounded-lg">
+                  <i className="fa-solid fa-dollar-sign text-2xl text-green-600"></i>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Tổng giao dịch</p>
+                  <p className="text-3xl font-bold text-slate-900 mt-2">
+                    {revenueSummary?.totalTransactions.toLocaleString() || 0}
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    {revenueSummary?.paidTransactions || 0} thành công
+                  </p>
+                </div>
+                <div className="p-3 bg-blue-100 rounded-lg">
+                  <i className="fa-solid fa-receipt text-2xl text-[#1976d2]"></i>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Doanh thu tháng này</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-2">
+                    {revenueSummary ? new Intl.NumberFormat('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    }).format(revenueSummary.revenueThisMonth) : '0 ₫'}
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    +{revenueSummary?.monthOverMonthGrowthPercent.toFixed(1) || 0}%
+                  </p>
+                </div>
+                <div className="p-3 bg-purple-100 rounded-lg">
+                  <i className="fa-solid fa-chart-line text-2xl text-purple-600"></i>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Revenue Chart */}
-          <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
-            <h2 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <i className="fa-solid fa-chart-bar text-[#1976d2]"></i>
-              Monthly Revenue
-            </h2>
-            <div className="space-y-4">
-              {revenueData.map((data, index) => (
-                <div key={index} className="flex items-center gap-4">
-                  <div className="w-12 text-sm font-medium text-slate-600">{data.month}</div>
-                  <div className="flex-1 bg-slate-100 rounded-full h-8 relative overflow-hidden">
-                    <div 
-                      className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#1976d2] to-[#64b5f6] rounded-full flex items-center justify-end pr-3 transition-all duration-500"
-                      style={{ width: `${(data.revenue / maxRevenue) * 100}%` }}
-                    >
-                      <span className="text-xs font-bold text-white">${data.revenue.toLocaleString()}</span>
+          {revenueSummary && revenueSummary.revenueByMonth.length > 0 && (
+            <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+              <h2 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <i className="fa-solid fa-chart-bar text-[#1976d2]"></i>
+                Doanh thu theo tháng
+              </h2>
+              <div className="space-y-4">
+                {revenueSummary.revenueByMonth.map((data, index) => {
+                  const maxRevenue = Math.max(...revenueSummary.revenueByMonth.map(d => d.totalRevenue))
+                  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                  return (
+                    <div key={index} className="flex items-center gap-4">
+                      <div className="w-12 text-sm font-medium text-slate-600">
+                        {monthNames[data.month - 1]}
+                      </div>
+                      <div className="flex-1 bg-slate-100 rounded-full h-8 relative overflow-hidden">
+                        <div 
+                          className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#1976d2] to-[#64b5f6] rounded-full flex items-center justify-end pr-3 transition-all duration-500"
+                          style={{ width: `${(data.totalRevenue / maxRevenue) * 100}%` }}
+                        >
+                          <span className="text-xs font-bold text-white">
+                            {new Intl.NumberFormat('vi-VN', {
+                              style: 'currency',
+                              currency: 'VND',
+                            }).format(data.totalRevenue)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  )
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Usage Chart */}
           <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
