@@ -206,67 +206,18 @@ const StudentCourses: React.FC = () => {
         </div>
       </main>
 
-      {/* Footer Area - Minimal Coursera style */}
-      <footer className="bg-[#f5f5f5] border-t border-slate-200 mt-20">
-        <div className="mx-auto max-w-7xl px-4 py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
-            <div>
-              <h5 className="font-bold text-slate-900 mb-5">StudyMate</h5>
-              <ul className="space-y-3 text-sm text-slate-600">
-                <li><a href="#" className="hover:text-[#1976d2]">About</a></li>
-                <li><a href="#" className="hover:text-[#1976d2]">What we offer</a></li>
-                <li><a href="#" className="hover:text-[#1976d2]">Leadership</a></li>
-                <li><a href="#" className="hover:text-[#1976d2]">Careers</a></li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-slate-900 mb-5">Community</h5>
-              <ul className="space-y-3 text-sm text-slate-600">
-                <li><a href="#" className="hover:text-[#1976d2]">Learners</a></li>
-                <li><a href="#" className="hover:text-[#1976d2]">Partners</a></li>
-                <li><a href="#" className="hover:text-[#1976d2]">Developers</a></li>
-                <li><a href="#" className="hover:text-[#1976d2]">Beta Testers</a></li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-slate-900 mb-5">More</h5>
-              <ul className="space-y-3 text-sm text-slate-600">
-                <li><a href="#" className="hover:text-[#1976d2]">Press</a></li>
-                <li><a href="#" className="hover:text-[#1976d2]">Investors</a></li>
-                <li><a href="#" className="hover:text-[#1976d2]">Terms</a></li>
-                <li><a href="#" className="hover:text-[#1976d2]">Privacy</a></li>
-              </ul>
-            </div>
-            <div className="col-span-2 md:col-span-1">
-              <h5 className="font-bold text-slate-900 mb-5">Mobile App</h5>
-              <div className="flex flex-col gap-3">
-                <div className="bg-black text-white px-4 py-2 rounded-lg flex items-center gap-3 cursor-pointer">
-                  <i className="fa-brands fa-apple text-2xl"></i>
-                  <div className="leading-tight">
-                    <p className="text-[10px] uppercase">Download on the</p>
-                    <p className="text-sm font-bold">App Store</p>
-                  </div>
-                </div>
-                <div className="bg-black text-white px-4 py-2 rounded-lg flex items-center gap-3 cursor-pointer">
-                  <i className="fa-brands fa-google-play text-xl"></i>
-                  <div className="leading-tight">
-                    <p className="text-[10px] uppercase">Get it on</p>
-                    <p className="text-sm font-bold">Google Play</p>
-                  </div>
-                </div>
-              </div>
+      <footer className="border-t border-slate-200 mt-20">
+        <div className="mx-auto max-w-7xl px-4 py-10">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <p className="text-sm text-slate-600">StudyMate - Nền tảng học tập thông minh dành cho bạn.</p>
+            <div className="flex items-center gap-5 text-sm">
+              <Link to="/courses" className="text-slate-500 hover:text-[#1976d2] transition-colors">Courses</Link>
+              <Link to="/community" className="text-slate-500 hover:text-[#1976d2] transition-colors">Community</Link>
+              <Link to="/membership" className="text-slate-500 hover:text-[#1976d2] transition-colors">Membership</Link>
             </div>
           </div>
-          
-          <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-xs text-slate-500">© 2025 StudyMate Inc. All rights reserved.</p>
-            <div className="flex gap-6">
-              <i className="fa-brands fa-facebook text-slate-400 hover:text-[#1976d2] cursor-pointer"></i>
-              <i className="fa-brands fa-linkedin text-slate-400 hover:text-[#1976d2] cursor-pointer"></i>
-              <i className="fa-brands fa-twitter text-slate-400 hover:text-[#1976d2] cursor-pointer"></i>
-              <i className="fa-brands fa-youtube text-slate-400 hover:text-[#1976d2] cursor-pointer"></i>
-              <i className="fa-brands fa-instagram text-slate-400 hover:text-[#1976d2] cursor-pointer"></i>
-            </div>
+          <div className="mt-6 pt-6 border-t border-slate-200 text-xs text-slate-500 text-center md:text-left">
+            © 2026 StudyMate. All rights reserved.
           </div>
         </div>
       </footer>

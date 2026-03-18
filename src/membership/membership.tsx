@@ -1,6 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import LogoImg from '../accesory/picture/StudyMate 1.png'
 import MainHeader from '../components/MainHeader'
+
+interface UserSubscription {
+  id: number
+  planName?: string
+  endDate: string
+  daysRemaining: number
+  isActive: boolean
+}
 
 const CheckIcon: React.FC<{ className?: string }> = ({ className = '' }) => (
   <svg
@@ -148,7 +156,50 @@ const PricingCard: React.FC<{
 
 const Membership: React.FC = () => {
   const [loading, setLoading] = useState(false)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
+  const [subscription, setSubscription] = useState<UserSubscription | null>(null)
   // const [error, setError] = useState('')
+
+  useEffect(() => {
+    const fetchMySubscription = async () => {
+      const token = localStorage.getItem('token')
+
+      if (!token) {
+        setSubscription(null)
+        setSubscriptionLoading(false)
+        return
+      }
+
+      try {
+        const response = await fetch('https://localhost:7259/api/PremiumPlan/my-subscription', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          setSubscription(result?.data || null)
+        } else {
+          setSubscription(null)
+        }
+      } catch (error) {
+        console.error('Failed to fetch subscription:', error)
+        setSubscription(null)
+      } finally {
+        setSubscriptionLoading(false)
+      }
+    }
+
+    fetchMySubscription()
+  }, [])
+
+  const formatDate = (dateValue?: string) => {
+    if (!dateValue) return '--'
+    const date = new Date(dateValue)
+    if (isNaN(date.getTime())) return '--'
+    return date.toLocaleDateString('vi-VN')
+  }
 
   const handlePremiumPayment = async () => {
     setLoading(true)
@@ -212,6 +263,19 @@ const Membership: React.FC = () => {
           </p>
         </div>
 
+        {!subscriptionLoading && subscription?.isActive && (
+          <div className="mx-auto max-w-6xl px-4 mb-8">
+            <div className="rounded-xl border border-[#bbdefb] bg-[#eef6ff] px-4 py-3 text-sm text-slate-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="font-semibold text-[#145ca5]">
+                Premium của bạn đang hoạt động ({subscription.planName || 'Premium Plan'})
+              </div>
+              <div className="text-slate-600">
+                Còn <span className="font-bold text-slate-900">{Math.max(0, subscription.daysRemaining)}</span> ngày • Hết hạn: <span className="font-semibold">{formatDate(subscription.endDate)}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Pricing Cards */}
         <div className="mx-auto max-w-6xl px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
@@ -249,7 +313,9 @@ const Membership: React.FC = () => {
               subtitle="Full platform access"
               price="80,000"
               period="VND/month"
-              priceSubtitle="<span class='font-bold'>800,000</span> VND/year <span class='text-yellow-300 font-bold'>(Save 17%)</span><br/>Auto-cancels when expired if not renewed"
+              priceSubtitle={subscription?.isActive
+                ? `Đang hoạt động • Còn <span class='font-bold'>${Math.max(0, subscription.daysRemaining)}</span> ngày<br/>Hết hạn: <span class='font-bold'>${formatDate(subscription.endDate)}</span>`
+                : "<span class='font-bold'>800,000</span> VND/year <span class='text-yellow-300 font-bold'>(Save 17%)</span><br/>Auto-cancels when expired if not renewed"}
               features={[
                 'Access to all courses',
                 'Unlimited AI chatbot',
@@ -261,8 +327,9 @@ const Membership: React.FC = () => {
               ]}
               isPremium={true}
               isPopular={true}
-              onButtonClick={handlePremiumPayment}
-              loading={loading}
+              onButtonClick={subscription?.isActive ? undefined : handlePremiumPayment}
+              buttonText={subscription?.isActive ? 'Premium Active' : 'Get Started'}
+              loading={loading || subscriptionLoading}
             />
           </div>
         </div>
