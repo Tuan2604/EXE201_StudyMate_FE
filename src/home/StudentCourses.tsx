@@ -6,41 +6,23 @@ interface Course {
   id: number
   title: string
   description: string
-  level: string
+  categoryName: string
   thumbnailUrl?: string
-  totalEnrollments?: number
-  lecturerName?: string
-  // Coursera-specific mock fields
-  providerName?: string
+  totalEnrollments: number
+  teacherName: string
   providerLogo?: string
-  skills?: string[]
-  duration?: string
-  courseType?: 'Course' | 'Specialization' | 'Professional Certificate'
-}
-
-const mapCourseLevel = (totalSections: number): string => {
-  if (totalSections <= 3) return 'Beginner'
-  if (totalSections <= 6) return 'Intermediate'
-  return 'Advanced'
 }
 
 const normalizeCourse = (raw: any): Course => {
-  const totalSections = Number(raw.totalSections || 0)
-  const totalMaterials = Number(raw.totalMaterials || 0)
-
   return {
     id: raw.id,
-    title: raw.title || 'Untitled Course',
-    description: raw.description || 'No description available.',
-    level: mapCourseLevel(totalSections),
+    title: raw.title || '',
+    description: raw.description || '',
+    categoryName: raw.categoryName || '',
     thumbnailUrl: undefined,
-    totalEnrollments: Number(raw.totalEnrollments || 0),
-    lecturerName: raw.teacherName || 'Unknown teacher',
-    providerName: raw.teacherName || 'StudyMate',
+    totalEnrollments: Number(raw.totalEnrollments ?? 0),
+    teacherName: raw.teacherName || '',
     providerLogo: raw.teacherAvatar || undefined,
-    skills: raw.categoryName ? [raw.categoryName] : ['General'],
-    duration: `${totalSections} section(s) • ${totalMaterials} material(s)`,
-    courseType: 'Course'
   }
 }
 
@@ -64,22 +46,18 @@ const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
         {/* Provider Logo Overlay */}
         {course.providerLogo && (
           <div className="absolute bottom-3 left-3 h-10 w-10 bg-white p-1.5 rounded shadow-sm">
-            <img src={course.providerLogo} alt={course.providerName} className="h-full w-full object-contain" />
+            <img src={course.providerLogo} alt={course.teacherName || course.title} className="h-full w-full object-contain" />
           </div>
         )}
         
-        {/* Course Type Tag */}
-        {course.courseType && (
-          <div className="absolute top-3 left-3 bg-white/95 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-slate-700 uppercase tracking-wide border border-slate-100 shadow-sm">
-            {course.courseType}
-          </div>
-        )}
       </div>
 
       {/* Content Area */}
       <div className="flex-1 p-5 flex flex-col">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">{course.providerName}</span>
+          <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            {course.teacherName || 'Unknown Teacher'}
+          </span>
         </div>
         
         <h3 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-[#1976d2] transition-colors line-clamp-2 min-h-[3.5rem]">
@@ -87,34 +65,20 @@ const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
         </h3>
 
         <div className="mt-2 mb-4">
-          <p className="text-xs text-slate-500 font-medium mb-1">Skills you'll gain:</p>
-          <div className="flex flex-wrap gap-1">
-            {course.skills?.slice(0, 3).map((skill, idx) => (
-              <span key={idx} className="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded">
-                {skill}
-              </span>
-            ))}
-            {course.skills && course.skills.length > 3 && (
-              <span className="text-[10px] text-slate-400 self-center">+{course.skills.length - 3}</span>
-            )}
-          </div>
+          <span className="inline-flex items-center rounded bg-slate-100 text-slate-600 text-[11px] px-2.5 py-1 font-medium">
+            {course.categoryName || 'Uncategorized'}
+          </span>
         </div>
 
         <div className="mt-auto space-y-3">
           <div className="flex items-center justify-between text-[11px] font-medium text-slate-500">
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1">
-                <i className="fa-regular fa-clock"></i>
-                {course.duration?.split(' at ')[0]}
-              </span>
-              <span className="flex items-center gap-1">
-                <i className="fa-solid fa-signal"></i>
-                {course.level}
-              </span>
+            <div className="flex items-center gap-1 text-slate-500">
+              <i className="fa-solid fa-layer-group"></i>
+              <span>{course.categoryName || 'Uncategorized'}</span>
             </div>
             <div className="text-xs text-slate-500 flex items-center gap-1">
               <i className="fa-solid fa-user-group"></i>
-              <span>{course.totalEnrollments || 0} enrolled</span>
+              <span>{course.totalEnrollments} enrolled</span>
             </div>
           </div>
         </div>
@@ -127,7 +91,6 @@ const StudentCourses: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedLevel, setSelectedLevel] = useState('All')
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -152,13 +115,12 @@ const StudentCourses: React.FC = () => {
   }, [])
 
   const filteredCourses = courses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.skills?.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
-    
-    const matchesLevel = selectedLevel === 'All' || course.level.toLowerCase() === selectedLevel.toLowerCase()
-    
-    return matchesSearch && matchesLevel
+    const keyword = searchTerm.trim().toLowerCase()
+
+    if (!keyword) return true
+
+    return course.title.toLowerCase().includes(keyword) ||
+      course.categoryName.toLowerCase().includes(keyword)
   })
 
   return (
@@ -166,92 +128,38 @@ const StudentCourses: React.FC = () => {
       <MainHeader />
 
       <main className="mx-auto max-w-7xl px-4 py-10">
-        <div className="flex flex-col lg:flex-row gap-10">
-          {/* Sidebar Filters */}
-          <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
-            <div>
-              <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <i className="fa-solid fa-sliders text-sm text-[#1976d2]"></i> Filter By
-              </h3>
-              
-              <div className="space-y-6">
-                {/* Level Filter */}
-                <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Level</h4>
-                  <div className="space-y-2">
-                    {['All', 'Beginner', 'Intermediate', 'Advanced'].map(level => (
-                      <label key={level} className="flex items-center gap-3 cursor-pointer group">
-                        <input 
-                          type="radio" 
-                          name="level"
-                          className="w-4 h-4 text-[#1976d2] border-slate-300 focus:ring-[#1976d2]"
-                          checked={selectedLevel === level}
-                          onChange={() => setSelectedLevel(level)}
-                        />
-                        <span className={`text-sm ${selectedLevel === level ? 'text-[#1976d2] font-bold' : 'text-slate-600 group-hover:text-slate-900'}`}>
-                          {level}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Duration Filter Mock */}
-                <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Duration</h4>
-                  <div className="space-y-2">
-                    {['Less than 2 hours', '1-4 weeks', '1-3 months', '3+ months'].map(dur => (
-                      <label key={dur} className="flex items-center gap-3 cursor-pointer group">
-                        <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#1976d2] focus:ring-[#1976d2]" />
-                        <span className="text-sm text-slate-600 group-hover:text-slate-900">{dur}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Topic Filter Mock */}
-                <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Subject</h4>
-                  <div className="space-y-2">
-                    {['Computer Science', 'Data Science', 'Business', 'Personal Development'].map(sub => (
-                      <label key={sub} className="flex items-center gap-3 cursor-pointer group">
-                        <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#1976d2] focus:ring-[#1976d2]" />
-                        <span className="text-sm text-slate-600 group-hover:text-slate-900">{sub}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-5 bg-gradient-to-br from-[#1976d2] to-[#145ca5] rounded-xl text-white">
-              <h4 className="font-bold mb-2">Learn without limits</h4>
-              <p className="text-xs text-white/80 mb-4 leading-relaxed">Get unlimited access to 7,000+ courses with StudyMate Plus.</p>
-              <Link to="/membership" className="block text-center bg-white text-[#1976d2] py-2 rounded-md text-xs font-bold hover:bg-slate-50 transition-colors">
-                Try Plus for Free
-              </Link>
-            </div>
-          </aside>
-
-          {/* Course Grid Area */}
-          <div className="flex-1">
-            <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col gap-8">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900">
-                  {selectedLevel === 'All' ? 'All Courses' : `${selectedLevel} Courses`}
-                </h2>
+                <h2 className="text-2xl font-bold text-slate-900">All Courses</h2>
                 <p className="text-sm text-slate-500 font-medium">Showing {filteredCourses.length} results</p>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-slate-500 font-medium">Sort by:</span>
-                <select className="bg-white border border-slate-200 rounded-md px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#1976d2]/20">
-                  <option>Most Relevant</option>
-                  <option>Newest</option>
-                  <option>Top Rated</option>
-                </select>
+              <div className="relative w-full lg:max-w-md">
+                <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by course name or category..."
+                  className="w-full rounded-xl border border-slate-300 bg-white pl-11 pr-10 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1976d2]/20 focus:border-[#1976d2]"
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    aria-label="Clear search"
+                  >
+                    <i className="fa-solid fa-xmark"></i>
+                  </button>
+                )}
               </div>
             </div>
+          </div>
+
+          <div>
 
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
@@ -285,12 +193,12 @@ const StudentCourses: React.FC = () => {
                   <i className="fa-solid fa-magnifying-glass text-3xl text-slate-300"></i>
                 </div>
                 <h3 className="text-xl font-bold text-slate-900">We couldn't find any matches</h3>
-                <p className="text-slate-500 mt-2 max-w-xs mx-auto">Try searching for something else or clearing your filters.</p>
+                <p className="text-slate-500 mt-2 max-w-xs mx-auto">Try searching with a different course name or category.</p>
                 <button 
-                  onClick={() => {setSearchTerm(''); setSelectedLevel('All');}}
+                  onClick={() => setSearchTerm('')}
                   className="mt-6 bg-[#1976d2] text-white px-6 py-2.5 rounded-md font-bold hover:bg-[#145ca5] transition-colors"
                 >
-                  Clear all filters
+                  Clear search
                 </button>
               </div>
             )}
