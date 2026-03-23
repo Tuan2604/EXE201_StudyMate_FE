@@ -34,14 +34,6 @@ const MainHeader: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <button
-              type="button"
-              className="hidden sm:inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#e3f2fd] text-[#1976d2] border border-[#bbdefb]"
-              aria-label="Search"
-            >
-              <span className="text-sm">⌕</span>
-            </button>
-
             <Link
               to="/membership"
               className="hidden sm:inline-flex items-center gap-2 rounded-md border border-[#bbdefb] bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"

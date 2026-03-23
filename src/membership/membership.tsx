@@ -277,37 +277,8 @@ const Membership: React.FC = () => {
         )}
 
         {/* Pricing Cards */}
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-            <PricingCard
-              title="Freemium"
-              subtitle="Free basic access"
-              price="0"
-              period="VND"
-              features={[
-                'Limited course access',
-                'Limited AI chatbot usage',
-                'Quiz & Flashcard games',
-                'Community access',
-                'Progress tracking',
-              ]}
-            />
-
-            <PricingCard
-              title="Pay-per-Course"
-              subtitle="Buy individual courses"
-              price="50,000 - 100,000"
-              period="VND/course"
-              features={[
-                'Lifetime course ownership',
-                'Unlimited AI chatbot',
-                'Unlimited Quiz & Flashcards',
-                'Download course materials',
-                'Ad-free experience',
-                'Priority support',
-              ]}
-            />
-
+        <div className="mx-auto max-w-lg px-4">
+          <div className="flex justify-center">
             <PricingCard
               title="Premium"
               subtitle="Full platform access"
@@ -328,113 +299,13 @@ const Membership: React.FC = () => {
               isPremium={true}
               isPopular={true}
               onButtonClick={subscription?.isActive ? undefined : handlePremiumPayment}
-              buttonText={subscription?.isActive ? 'Premium Active' : 'Get Started'}
+              buttonText={subscription?.isActive ? 'Active' : 'Get Started'}
               loading={loading || subscriptionLoading}
             />
           </div>
         </div>
 
-        {/* Feature Comparison */}
-        <div className="mx-auto max-w-5xl px-4 mt-20">
-          <h2 className="text-2xl font-bold text-center mb-10 text-slate-900">
-            Feature Comparison
-          </h2>
 
-          <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[600px]">
-                <thead>
-                  <tr className="border-b border-slate-100">
-                    <th className="py-5 px-6 text-left text-sm font-bold text-slate-900 w-1/4">
-                      Features
-                    </th>
-                    <th className="py-5 px-6 text-center text-sm font-bold text-slate-900 w-1/4">
-                      Freemium
-                    </th>
-                    <th className="py-5 px-6 text-center text-sm font-bold text-slate-900 w-1/4">
-                      Pay-per-Course
-                    </th>
-                    <th className="py-5 px-6 text-center text-sm font-bold text-slate-900 w-1/4">
-                      Premium
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  <tr>
-                    <td className="py-4 px-6 text-sm text-slate-600">
-                      Course Access
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-slate-600">
-                      Limited
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-slate-600">
-                      Purchased Only
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-slate-600">
-                      All Courses
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 px-6 text-sm text-slate-600">
-                      AI Chatbot
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-slate-600">
-                      Limited
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-[#1976d2]">
-                      ✓
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-[#1976d2]">
-                      ✓
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 px-6 text-sm text-slate-600">
-                      Quiz & Flashcard
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-slate-600">
-                      Basic
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-[#1976d2]">
-                      ✓
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-[#1976d2]">
-                      ✓
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 px-6 text-sm text-slate-600">
-                      Advertisements
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-slate-600">
-                      Yes
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-slate-600">
-                      No
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-slate-600">
-                      No
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 px-6 text-sm text-slate-600">
-                      Lifetime Ownership
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-slate-600">
-                      —
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-[#1976d2]">
-                      ✓
-                    </td>
-                    <td className="py-4 px-6 text-center text-sm text-slate-600">
-                      While Subscribed
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   )
