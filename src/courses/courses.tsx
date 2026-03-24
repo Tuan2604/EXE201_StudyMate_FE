@@ -29,7 +29,27 @@ const Courses: React.FC = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch('https://localhost:7259/api/Course/all');
+        const token = localStorage.getItem('token');
+        const rawUser = localStorage.getItem('user');
+        let role = '';
+
+        try {
+          role = JSON.parse(rawUser || '{}')?.role?.toLowerCase?.() || '';
+        } catch {
+          role = '';
+        }
+
+        const isAdmin = role === 'admin';
+        const endpoint = isAdmin
+          ? 'https://localhost:7259/api/Course/admin/all'
+          : 'https://localhost:7259/api/Course/all';
+
+        const response = await fetch(endpoint, {
+          headers: isAdmin && token
+            ? { Authorization: `Bearer ${token}` }
+            : undefined,
+        });
+
         if (response.ok) {
           const data = await response.json();
           setCourses(data.data || []);

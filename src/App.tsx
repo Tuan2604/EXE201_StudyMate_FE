@@ -27,6 +27,7 @@ import PaymentManagement from './payment-management/payment-management'
 import Payment from './payment/payment'
 import PaymentSuccess from './payment/payment-success'
 import PaymentCancel from './payment/payment-cancel'
+import VerifySuccess from './verify-success/verify-success'
 import AIChat from './chatbot/AIChat'
 import CommunityPage from './community/CommunityPage'
 import PostDetail from './community/PostDetail'
@@ -85,6 +86,7 @@ const App: React.FC = () => {
           <Route path="/payment" element={<Payment />} />
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/cancel" element={<PaymentCancel />} />
+          <Route path="/verify-success" element={<VerifySuccess />} />
           
           {/* Course Creation Routes wrapped in Provider */}
           <Route element={<CourseCreationLayout />}>

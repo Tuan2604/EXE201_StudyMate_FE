@@ -185,7 +185,17 @@ const CourseDetail: React.FC = () => {
           const result = await response.json()
           mappedCourse = mapApiCourseToDetailedCourse(result?.data)
         } else {
-          const listResponse = await fetch('https://localhost:7259/api/Course/all')
+          const token = localStorage.getItem('token')
+          const role = String(user?.role || '').toLowerCase()
+          const endpoint = role === 'admin'
+            ? 'https://localhost:7259/api/Course/admin/all'
+            : 'https://localhost:7259/api/Course/all'
+
+          const listResponse = await fetch(endpoint, {
+            headers: role === 'admin' && token
+              ? { Authorization: `Bearer ${token}` }
+              : undefined,
+          })
 
           if (listResponse.ok) {
             const listResult = await listResponse.json()

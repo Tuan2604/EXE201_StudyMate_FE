@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { getRevenueSummary } from '../services/paymentService'
 import type { RevenueSummaryResponse } from '../services/paymentService'
+import { getAverageRating } from '../services/feedbackService'
 import MainHeader from '../components/MainHeader'
 
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [revenueSummary, setRevenueSummary] = useState<RevenueSummaryResponse | null>(null)
+  const [averageRating, setAverageRating] = useState(0)
   const [loading, setLoading] = useState(true)
 
   // Hardcoded usage data (monthly active users) - keep for now
@@ -23,21 +25,35 @@ const AdminDashboard: React.FC = () => {
 
   const maxUsers = Math.max(...usageData.map(d => d.users))
 
-  // Fetch revenue summary from API
+  // Fetch dashboard metrics from APIs
   useEffect(() => {
-    const fetchRevenueSummary = async () => {
+    const fetchDashboardData = async () => {
       try {
         setLoading(true)
-        const data = await getRevenueSummary()
-        setRevenueSummary(data)
+        const [revenueResult, ratingResult] = await Promise.allSettled([
+          getRevenueSummary(),
+          getAverageRating(),
+        ])
+
+        if (revenueResult.status === 'fulfilled') {
+          setRevenueSummary(revenueResult.value)
+        } else {
+          console.error('Error fetching revenue summary:', revenueResult.reason)
+        }
+
+        if (ratingResult.status === 'fulfilled') {
+          setAverageRating(ratingResult.value)
+        } else {
+          console.error('Error fetching average rating:', ratingResult.reason)
+        }
       } catch (error) {
-        console.error('Error fetching revenue summary:', error)
+        console.error('Error fetching dashboard data:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchRevenueSummary()
+    fetchDashboardData()
   }, [])
 
   // Check if user is not logged in
@@ -79,14 +95,14 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 z-40 h-screen transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed top-0 left-0 z-40 h-screen transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-full w-64 bg-white shadow-xl border-r border-slate-200 flex flex-col">
           {/* Sidebar Header */}
           <div className="p-4 border-b border-slate-200 flex items-center justify-between">
             <h2 className="text-lg font-bold text-slate-900">Management</h2>
             <button 
               onClick={() => setSidebarOpen(false)}
-              className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-slate-100 transition-colors lg:hidden"
             >
               <i className="fa-solid fa-times text-slate-600"></i>
             </button>
@@ -125,36 +141,6 @@ const AdminDashboard: React.FC = () => {
                   <span className="font-medium">Payment Management</span>
                 </Link>
               </li>
-              <li>
-                <Link 
-                  to="/content-management"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-orange-50 text-slate-700 hover:text-orange-600 transition-colors group"
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <i className="fa-solid fa-file-lines text-lg"></i>
-                  <span className="font-medium">Content Management</span>
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/reports"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-cyan-50 text-slate-700 hover:text-cyan-600 transition-colors group"
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <i className="fa-solid fa-chart-bar text-lg"></i>
-                  <span className="font-medium">Reports & Analytics</span>
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/admin-settings"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-100 text-slate-700 hover:text-slate-900 transition-colors group"
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <i className="fa-solid fa-gear text-lg"></i>
-                  <span className="font-medium">Settings</span>
-                </Link>
-              </li>
             </ul>
           </nav>
 
@@ -176,7 +162,7 @@ const AdminDashboard: React.FC = () => {
       {/* Overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-30 transition-opacity"
+          className="fixed inset-0 bg-black/50 z-30 transition-opacity lg:hidden"
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
@@ -184,9 +170,16 @@ const AdminDashboard: React.FC = () => {
       {/* Header */}
       <MainHeader />
 
-      <main className="mx-auto max-w-7xl px-4 py-8">
+      <main className="mx-auto max-w-7xl px-4 py-8 lg:pl-64">
         {/* Welcome Section */}
         <div className="mb-8">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="lg:hidden mb-4 inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            <i className="fa-solid fa-bars"></i>
+            Menu quản trị
+          </button>
           <h1 className="text-3xl font-bold text-slate-900">Dashboard Overview</h1>
           <p className="text-slate-600 mt-1">Welcome back, {user.fullName || 'Admin'}!</p>
         </div>
@@ -202,11 +195,11 @@ const AdminDashboard: React.FC = () => {
             <div className="bg-white rounded-xl shadow-md p-6 border border-slate-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Total Users</p>
-                  <p className="text-3xl font-bold text-slate-900 mt-2">1,234</p>
+                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Đánh giá trung bình</p>
+                  <p className="text-3xl font-bold text-slate-900 mt-2">{averageRating.toFixed(1)}/5</p>
                 </div>
                 <div className="p-3 bg-blue-100 rounded-lg">
-                  <i className="fa-solid fa-users text-2xl text-[#1976d2]"></i>
+                  <i className="fa-solid fa-star text-2xl text-[#1976d2]"></i>
                 </div>
               </div>
             </div>
